@@ -1,0 +1,17 @@
+{
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "description": "",
+  "manifest_version": 2,
+  "name": "visual-history",
+  "permissions": [
+    "tabs",
+    "webNavigation",
+    "<all_urls>",
+    "storage"
+  ],
+  "version": "0.1.0"
+}
