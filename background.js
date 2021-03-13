@@ -6,22 +6,23 @@ async function onBrowserActionClicked(tab) {
 
 async function saveToStorage(details) {
 
-	console.log('saveToStorage');
+	//console.log('saveToStorage');
 
 	let tabInfo;
 	try {
 		tabInfo = await browser.tabs.get(details.tabId);
 	}catch(error){
-		console.error(error);
+		//console.error(error);
+		console.log('>>[STOP] can not get tab by Id');
 		return;
 	}
-	console.log('>> tab with tabId still exists');
+	//console.log('>> tab with tabId still exists');
 
 	if( tabInfo.url !== details.url) {
 		console.log('>>[STOP] tab url changed from ' , details.url, " to ", tabInfo.url);
 		return;
 	}
-	console.log('>> tab url has not changed');
+	//console.log('>> tab url has not changed');
 
 	//  CaptureTab
 	
@@ -29,9 +30,8 @@ async function saveToStorage(details) {
 	try {
 		const options = {
 			"format": "jpeg"
-			,"quality": 5
+			,"quality": 3
 			//,"rect" : { "x": 0, "y": 0, "width": 100, "height": 100 }
-			//,"scale": 1
 		};
 		imgUri = await browser.tabs.captureTab(details.tabId,options);
 	}catch(error) {
@@ -46,6 +46,7 @@ async function saveToStorage(details) {
 		//console.log('visualHistoryItems 1', visualHistoryItems);
 	}catch(error){
 		console.error(error);
+		return;
 	}
 
 	const item = {
@@ -53,7 +54,9 @@ async function saveToStorage(details) {
 		img: imgUri,
 		url: details.url
 	}
-	visualHistoryItems = visualHistoryItems['visualHistoryItems'];
+	if( typeof visualHistoryItems['visualHistoryItems'] === 'object') {
+		visualHistoryItems = visualHistoryItems['visualHistoryItems'];
+	}
 	visualHistoryItems[details.url] = item;
 
 	// reset / empty storage
@@ -61,8 +64,8 @@ async function saveToStorage(details) {
 
 	try {
 		await browser.storage.local.set({visualHistoryItems});
-		visualHistoryItems = await browser.storage.local.get("visualHistoryItems");
-		console.log('visualHistoryItems 2', visualHistoryItems);
+		//visualHistoryItems = await browser.storage.local.get("visualHistoryItems");
+		//console.log('visualHistoryItems 2', visualHistoryItems);
 	}catch(error){
 		console.error(error);
 		return; 
@@ -90,15 +93,10 @@ function onCompleted(details) {
 
 
 	setTimeout(function() {
-		console.log('setTimeout');
+		//console.log('setTimeout');
 		saveToStorage(details);
-	}, 3000);
+	}, 5000);
 }
 
-const filter = {
-	"url": ["*://*"],
-	"schemes": ["http","https"]
-}
-
-browser.webNavigation.onCompleted.addListener(onCompleted /*, filter*/);
+browser.webNavigation.onCompleted.addListener(onCompleted); // webNavigation permission 
 browser.browserAction.onClicked.addListener(onBrowserActionClicked); // menu permission
