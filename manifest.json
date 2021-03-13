@@ -4,9 +4,14 @@
       "background.js"
     ]
   },
+  "browser_action": {
+    "browser_style": true,
+    "default_icon": "icon.png",
+    "default_title": "visualHistory"
+  },
   "description": "",
   "manifest_version": 2,
-  "name": "visual-history",
+  "name": "visualHistory",
   "permissions": [
     "tabs",
     "webNavigation",

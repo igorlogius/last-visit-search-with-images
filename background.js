@@ -1,4 +1,8 @@
 
+async function onBrowserActionClicked(tab) { 
+	// open visualHistory html
+	browser.tabs.create({url: "/visualHistory.html"});
+}
 
 async function saveToStorage(details) {
 
@@ -25,7 +29,7 @@ async function saveToStorage(details) {
 	try {
 		const options = {
 			"format": "jpeg"
-			,"quality": 25
+			,"quality": 5
 			//,"rect" : { "x": 0, "y": 0, "width": 100, "height": 100 }
 			//,"scale": 1
 		};
@@ -72,6 +76,13 @@ function onCompleted(details) {
 	if (details.frameId !== 0) {
 		return;
 	}
+
+	if (!details.url.startsWith("http://") &&  
+	    !details.url.startsWith("https://")
+	){
+		return;
+	}
+
 	console.log(`>> onCompleted: ${details.url}`);
 
 	// create a timeout function which takes the sceenshot
@@ -81,7 +92,13 @@ function onCompleted(details) {
 	setTimeout(function() {
 		console.log('setTimeout');
 		saveToStorage(details);
-	}, 1000);
+	}, 3000);
 }
 
-browser.webNavigation.onCompleted.addListener(onCompleted);
+const filter = {
+	"url": ["*://*"],
+	"schemes": ["http","https"]
+}
+
+browser.webNavigation.onCompleted.addListener(onCompleted /*, filter*/);
+browser.browserAction.onClicked.addListener(onBrowserActionClicked); // menu permission
