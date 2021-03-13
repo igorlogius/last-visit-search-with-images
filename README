@@ -16,7 +16,7 @@ ZIPFILE=$(mktemp)
 EXTRDIR=$(mktemp -d)
 
 # download latest source
-wget -q --show-progress 'https://github.com/igorlogius/visualHistory/archive/master.zip' -O $ZIPFILE
+wget -q --show-progress 'https://github.com/igorlogius/visualHistory/archive/main.zip' -O $ZIPFILE
 
 # extract without paths and README
 unzip -j $ZIPFILE -d $EXTRDIR -x "*/README"
