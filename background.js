@@ -30,7 +30,7 @@ async function saveToStorage(details) {
 	try {
 		const options = {
 			"format": "jpeg"
-			,"quality": 3
+			,"quality": 5
 			//,"rect" : { "x": 0, "y": 0, "width": 100, "height": 100 }
 		};
 		imgUri = await browser.tabs.captureTab(details.tabId,options);
