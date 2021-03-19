@@ -1,0 +1,17 @@
+
+table.dataTable tbody td:nth-child(1) {
+  vertical-align: top;
+  text-align: left;
+  width:auto;
+}
+
+table.dataTable tbody td:nth-child(2) {
+  vertical-align: top;
+  text-align: right;
+}
+
+table.dataTable tbody td:nth-child(3) {
+  vertical-align: top;
+  text-align: left;
+  width:0px;
+}
