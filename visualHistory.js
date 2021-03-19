@@ -23,17 +23,37 @@ $(document).ready(async function() {
 		});
 
 		var table = $('#myTable').DataTable( {
+			"columnDefs": [
+			    { orderable: false , targets: 2}
+  			],
 			"destroy": true,
+			"deferRender": true,
+			"stateSave": true,
 			"data": dtdata,
+			"dom": '<"top"iflprt><"bottom"iflp><"clear">',
+			"lengthMenu": [ [50, 100, 250, 500, -1], [50, 100, 250, 500, "All"] ],
 			"columns": [
 				{ "data": "ts" 
 					, "render": function(data, type, row, meta) {
-						return type === 'display' ? (new Date(data)).toISOString() : data;
+						const d = new Date(data);
+						let t = d.getFullYear();
+						let str = t + "-";
+						t = d.getMonth();
+						str = str + ((t<10)? "0":"") + t + "-";
+						t = d.getDay();
+						str = str + ((t<10)? "0":"") + t + " ";
+						
+						t = d.getHours();
+						str = str + ((t<10)? "0":"") + t + ":";
+						t = d.getMinutes();
+						str = str + ((t<10)? "0":"") + t + "";
+
+						return type === 'display' ? str : data;
 					}
 				}
 				,{ "data": "url" 
 					,"render": function(data, type,row, meta) {
-						return type === 'display' ? '<a href="' + data + '" a>' + data + '</a>' : data;
+						return type === 'display' ? '<a target="_blank" href="' + data + '" a>' + data + '</a>' : data;
 					}
 				}
 				,{ "data": "img" 
@@ -47,28 +67,30 @@ $(document).ready(async function() {
 
 		//alert( 'There are'+table.data().length+' row(s) of data in this table' );
 
-		$('#myTable tbody').on( 'click', 'tr', function () {
-			if ( $(this).hasClass('selected') ) {
-				$(this).removeClass('selected');
-			}
-			else {
-				table.$('tr.selected').removeClass('selected');
-				$(this).addClass('selected');
-			}
-		} );
+		$('#myTable tbody').on( 'click', 'tr', toggleRowSelection);
 
-		$('#nuke').click( async function () {
+		function toggleRowSelection() {
+			$(this).toggleClass('selected');
+		} 
+
+		$('#nuke').on("click",nuke);
+		
+		async function nuke() {
 			let visualHistoryItems = {"visualHistoryItems": {}};
 			visualHistoryItems = visualHistoryItems['visualHistoryItems'];
 			await browser.storage.local.set({visualHistoryItems});
 			loadTable();
-		});
+		}
 
 		$('#button').click( async function () {
 
-			// get data from storage
-			var d = table.row('.selected' ).data() 
-			//console.log(d); 
+			//console.log('button', );
+
+			//console.log(data);
+			//return;
+			
+			$('#myTable tbody').off( 'click', 'tr', toggleRowSelection);
+			$('#nuke').off("click",nuke);
 
 			let visualHistoryItems = {"visualHistoryItems": {}};
 			try {
@@ -82,7 +104,10 @@ $(document).ready(async function() {
 				visualHistoryItems = visualHistoryItems['visualHistoryItems'];
 			}
 
-			delete visualHistoryItems[d.url];
+			for (let $el of $('#myTable tbody tr.selected') ) {
+				var data = table.row($el).data();
+				delete visualHistoryItems[data.url];
+			}
 
 			await browser.storage.local.set({visualHistoryItems});
 
