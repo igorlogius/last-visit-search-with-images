@@ -1,12 +1,18 @@
 <html>
 	<head>
+		<meta charset="utf-8">
 		<title>visualHistory</title>	
 		<link rel="stylesheet" type="text/css" href="jquery.dataTables.min.css" />
 		<link rel="stylesheet" type="text/css" href="visualHistory.css" />
+		<link rel="stylesheet" type="text/css" href="jquery-ui.css" />
 	</head>
 	<body style="background: lightgray;" >
 		<button id="button">Delete selected rows</button>
 		<button id="nuke">Delete ALL rows</button>
+		<label for="from">From</label>
+		<input type="text" id="from" name="from">
+		<label for="to">to</label>
+		<input type="text" id="to" name="to">		
 		<table id="myTable" class="display cell-border stripe" style="width:75%;">
 			<thead>
 				<tr>
@@ -27,6 +33,7 @@
 		</table>
 
 		<script type="text/javascript" src="jquery-3.5.1.js" ></script>
+		<script type="text/javascript" src="jquery-ui.js" ></script>
 		<script type="text/javascript" src="jquery.dataTables.min.js" ></script>
 		<script type="text/javascript" src="visualHistory.js"></script>
 	</body>
