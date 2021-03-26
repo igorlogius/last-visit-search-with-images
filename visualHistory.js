@@ -12,7 +12,7 @@ $(document).ready(async function() {
 	var max = NaN;
 	    var date;
 
-	    console.log(from_str, " ", to_str, data[0]);
+	    //console.log(from_str, " ", to_str, data[0]);
 
 	if(from_str !== "" ) {
 		date = $.datepicker.parseDate( dateFormat, from_str);
@@ -24,7 +24,7 @@ $(document).ready(async function() {
 	}
         var age = parseFloat( data[0] ) || 0; // use data for the age column
 
-	    console.log('min: ' + min, " max: ", max, " value: ", data[0]);
+	    //console.log('min: ' + min, " max: ", max, " value: ", data[0]);
 
         if ( ( isNaN( min ) && isNaN( max ) ) ||
              ( isNaN( min ) && age <= max ) ||
