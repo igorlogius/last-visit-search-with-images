@@ -1,102 +1,103 @@
 
-async function onBrowserActionClicked(tab) { 
-	// open visualHistory html
-	browser.tabs.create({url: "/visualHistory.html"});
-}
+const extId="visualHistory";
 
-async function saveToStorage(details) {
+const temporary = browser.runtime.id.endsWith('@temporary-addon'); // debugging?
 
-	//console.log('saveToStorage');
-
-	let tabInfo;
-	try {
-		tabInfo = await browser.tabs.get(details.tabId);
-	}catch(error){
-		//console.error(error);
-		console.log('>>[STOP] can not get tab by Id');
+const log = (level, msg) => {
+	level = level.trim().toLowerCase();
+	if (['error','warn'].includes(level)
+		|| ( temporary && ['debug','info','log'].includes(level))
+	) {
+		console[level](extId + '::' + level.toUpperCase() + '::' + msg);
 		return;
 	}
-	//console.log('>> tab with tabId still exists');
+};
 
+
+const saveToStorage = async (details) => {
+	// 
+	const tabInfo = await (async () => {
+		try {
+			return await browser.tabs.get(details.tabId);
+		}catch(error){
+			log('DEBUG', "[STOPPING] tabId " + details.tabId + " does not exist");
+			return null;
+		}
+	})();
+	if(tabInfo === null){return;}
+	log('DEBUG', "[CONTINUE] tabId " + details.tabId + " exists");
+
+	//
 	if( tabInfo.url !== details.url) {
-		console.log('>>[STOP] tab url changed from ' , details.url, " to ", tabInfo.url);
+		log('DEBUG', "[STOPPING] tabID "+ details.tabId +" with url " + details.url + "does not exist");
 		return;
 	}
-	//console.log('>> tab url has not changed');
+	log('DEBUG', "[CONTINUE] tabId "+ details.tabId +" with url " + details.url + " exist");
 
-	//  CaptureTab
-	
-	let imgUri;
-	try {
-		const options = {
-			"format": "jpeg"
-			,"quality": 5
-			//,"rect" : { "x": 0, "y": 0, "width": 100, "height": 100 }
-		};
-		imgUri = await browser.tabs.captureTab(details.tabId,options);
-	}catch(error) {
-		console.error(error);
-		return;
-	}
-	//console.log(imgUri);
+	// 
+	const imgUri = await (async () => {
+		try {
+			const options = {"format":"jpeg","quality":5};
+			return await browser.tabs.captureTab(details.tabId,options);
+		}catch(error) {
+			log('ERROR', "[STOPPING] tabId "+ details.tabId +" failed capture");
+			return null;
+		}
+	})();
+	if(imgUri === null){return;}
+	log('DEBUG', "[CONTINUE] tabId "+ details.tabId +" captured");
 		
+	//
 	let visualHistoryItems = {"visualHistoryItems": {}};
 	try {
 		visualHistoryItems = await browser.storage.local.get("visualHistoryItems");
-		//console.log('visualHistoryItems 1', visualHistoryItems);
+		log('DEBUG', "[CONTINUE] tabId " + details.tabId + " got items from storage");
 	}catch(error){
 		console.error(error);
+		log('ERROR', "[STOPPING] tabId " + details.tabId + " failed to get items from storage");
 		return;
 	}
-
-	const item = {
-		ts: details.timeStamp,
-		img: imgUri,
-		url: details.url
-	}
+	//
 	if( typeof visualHistoryItems['visualHistoryItems'] === 'object') {
 		visualHistoryItems = visualHistoryItems['visualHistoryItems'];
 	}
-	visualHistoryItems[details.url] = item;
-
-	// reset / empty storage
-	//visualHistoryItems = {};
-
+	//
+	visualHistoryItems[details.url] = {
+		ts: details.timeStamp,
+		img: imgUri,
+		url: details.url
+	};
+	//
 	try {
 		await browser.storage.local.set({visualHistoryItems});
-		//visualHistoryItems = await browser.storage.local.get("visualHistoryItems");
-		//console.log('visualHistoryItems 2', visualHistoryItems);
+		log('DEBUG', "[CONTINUE] tabId " + details.tabId + " wrote item to storage");
 	}catch(error){
-		console.error(error);
+		log('ERROR', "[STOPPING] tabId " + details.tabId + " failed to write item to storage");
+	}
+};
+
+const onCompleted = (details) => {
+
+	if (details.frameId !== 0) { 
+		log('DEBUG', "[STOPPING] tabId " + details.tabId + " with url " + details.url + " is not a main frame"); 
 		return; 
 	}
+	log('DEBUG', "[CONTINUE] tabId " + details.tabId + " with url " + details.url + " is a main frame"); 
 
-}
-
-function onCompleted(details) {
-
-	// Filter out any sub-frame related navigation event
-	if (details.frameId !== 0) {
-		return;
+	if ( !/^https?:\/\//.test(details.url) ){ 
+		log('DEBUG', "[STOPPING] tabId " + details.tabId + " with url " + details.url + " has an invalid protocol"); 
+		return; 
 	}
+	log('DEBUG', "[CONTINUE] tabId " + details.tabId + " with url " + details.url + " has an valid protocol"); 
 
-	if (!details.url.startsWith("http://") &&  
-	    !details.url.startsWith("https://")
-	){
-		return;
-	}
-
-	console.log(`>> onCompleted: ${details.url}`);
-
-	// create a timeout function which takes the sceenshot
-	//
-
-
-	setTimeout(function() {
-		//console.log('setTimeout');
+	setTimeout( () => {
 		saveToStorage(details);
 	}, 5000);
-}
+};
 
-browser.webNavigation.onCompleted.addListener(onCompleted); // webNavigation permission 
-browser.browserAction.onClicked.addListener(onBrowserActionClicked); // menu permission
+const onBrowserActionClicked = (tab) => { 
+	browser.tabs.create({url: "visualHistory.html"});
+};
+
+browser.webNavigation.onCompleted.addListener(onCompleted); 
+browser.browserAction.onClicked.addListener(onBrowserActionClicked);
