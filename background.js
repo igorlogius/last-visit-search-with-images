@@ -48,28 +48,13 @@ const saveToStorage = async (details) => {
 	log('DEBUG', "[CONTINUE] tabId "+ details.tabId +" captured");
 		
 	//
-	let visualHistoryItems = {"visualHistoryItems": {}};
 	try {
-		visualHistoryItems = await browser.storage.local.get("visualHistoryItems");
-		log('DEBUG', "[CONTINUE] tabId " + details.tabId + " got items from storage");
-	}catch(error){
-		console.error(error);
-		log('ERROR', "[STOPPING] tabId " + details.tabId + " failed to get items from storage");
-		return;
-	}
-	//
-	if( typeof visualHistoryItems['visualHistoryItems'] === 'object') {
-		visualHistoryItems = visualHistoryItems['visualHistoryItems'];
-	}
-	//
-	visualHistoryItems[details.url] = {
+	await idbKeyval.set(details.url, {
 		ts: details.timeStamp,
 		img: imgUri,
 		url: details.url
-	};
+	});
 	//
-	try {
-		await browser.storage.local.set({visualHistoryItems});
 		log('DEBUG', "[CONTINUE] tabId " + details.tabId + " wrote item to storage");
 	}catch(error){
 		log('ERROR', "[STOPPING] tabId " + details.tabId + " failed to write item to storage");
@@ -96,6 +81,7 @@ const onCompleted = (details) => {
 };
 
 const onBrowserActionClicked = (tab) => { 
+
 	browser.tabs.create({url: "visualHistory.html"});
 };
 

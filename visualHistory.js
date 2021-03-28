@@ -40,22 +40,14 @@ $(document).ready(async function() {
 
 
 
-		let visualHistoryItems = {"visualHistoryItems": {}};
-		try {
-			visualHistoryItems = await browser.storage.local.get("visualHistoryItems");
-		}catch(error){
-			console.error(error);
-		}
-
-		if( typeof visualHistoryItems['visualHistoryItems'] === 'object') {
-			visualHistoryItems = visualHistoryItems['visualHistoryItems'];
-		}
-
 		//console.log('visualHistory.js: visualHistoryItems',visualHistoryItems);
 
 
+
 		dtdata = []
-		Object.entries(visualHistoryItems).forEach(([key,value]) => {
+		const entries = await idbKeyval.entries();
+		
+		entries.forEach(([key,value]) => {
 			dtdata.push(value);
 		});
 
@@ -113,9 +105,7 @@ $(document).ready(async function() {
 		$('#nuke').on("click",nuke);
 		
 		async function nuke() {
-			let visualHistoryItems = {"visualHistoryItems": {}};
-			visualHistoryItems = visualHistoryItems['visualHistoryItems'];
-			await browser.storage.local.set({visualHistoryItems});
+			await idbKeyval.clear();
 			loadTable();
 		}
 
@@ -129,24 +119,11 @@ $(document).ready(async function() {
 			$('#myTable tbody').off( 'click', 'tr', toggleRowSelection);
 			$('#nuke').off("click",nuke);
 
-			let visualHistoryItems = {"visualHistoryItems": {}};
-			try {
-				visualHistoryItems = await browser.storage.local.get("visualHistoryItems");
-				//console.log('visualHistoryItems 1', visualHistoryItems);
-			}catch(error){
-				console.error(error);
-			}
-
-			if( typeof visualHistoryItems['visualHistoryItems'] === 'object') {
-				visualHistoryItems = visualHistoryItems['visualHistoryItems'];
-			}
-
 			for (let $el of $('#myTable tbody tr.selected') ) {
 				var data = table.row($el).data();
-				delete visualHistoryItems[data.url];
+				await idbKeyval.del(data.url);
 			}
 
-			await browser.storage.local.set({visualHistoryItems});
 
 			loadTable();
 		} );
