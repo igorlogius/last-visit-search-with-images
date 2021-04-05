@@ -17,10 +17,14 @@
   },
   "manifest_version": 2,
   "name": "visualHistory",
+  "options_ui": {
+	  "page": "options.html"
+  },
   "permissions": [
     "tabs",
+    "storage",
     "webNavigation",
     "<all_urls>"
   ],
-  "version": "0.4.0"
+  "version": "0.5.0"
 }
