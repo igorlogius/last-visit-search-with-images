@@ -41,7 +41,7 @@ async function saveToStorage (details) {
 	// 
 	const imgUri = await (async () => {
 		try {
-			const options = {"format":"jpeg","quality":5};
+			const options = {"format":"jpeg","quality":6};
 			return await browser.tabs.captureTab(details.tabId,options);
 		}catch(error) {
 			log('ERROR', "[STOPPING] tabId "+ details.tabId +" failed capture");
