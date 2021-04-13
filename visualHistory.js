@@ -82,7 +82,7 @@ $(document).ready(async function() {
 				}
 				,{ "data": "url" 
 					,"render": function(data, type,row, meta) {
-						return type === 'display' ? '<a target="_blank" href="' + data + '" a>' + data + '</a>' : data;
+						return type === 'display' ? '<a class="urlcell" target="_blank" href="' + data + '" a>' + data + '</a>' : data;
 					}
 				}
 				,{ "data": "img" 
@@ -92,7 +92,6 @@ $(document).ready(async function() {
 				}
 			]
 		} );
-
 
 		//alert( 'There are'+table.data().length+' row(s) of data in this table' );
 
