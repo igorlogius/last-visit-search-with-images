@@ -7,12 +7,20 @@
 		<link rel="stylesheet" type="text/css" href="jquery-ui.css" />
 	</head>
 	<body style="background: lightgray;" >
-		<button id="button">Delete selected rows</button>
-		<button id="nuke">Delete ALL rows</button>
-		<label for="from">From</label>
-		<input type="text" id="from" name="from">
-		<label for="to">to</label>
-		<input type="text" id="to" name="to">		
+		<hr>
+		<span>|</span>
+		<b>Delete:</b> 
+		<button id="nuke">displayed</button>
+		<button id="button">selected</button>
+		<span>|</span>
+		<div style="float:right">
+		<span>|</span>
+		<b>Filter by Date:</b>
+		<input type="text" id="from" name="from" style="width:6vw;" placeholder="From">
+		<input type="text" id="to" name="to" style="width:6vw;" placeholder="To">		
+		<span>|</span>
+		</div>
+		<hr>
 		<table id="myTable" class="display cell-border stripe" style="width:75%;">
 			<thead>
 				<tr>
