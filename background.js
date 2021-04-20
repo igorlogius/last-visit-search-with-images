@@ -19,7 +19,22 @@ function log() {
 
 
 async function saveToStorage (details) {
+
+	//log('debug', "saveToStorage");
 	// 
+	if(typeof details.responseHeaders !== 'undefined') {
+		for (let header of details.responseHeaders) {
+			//log('debug', header.name + ": " + header.value);
+			if(header.name.toLowerCase() === 'content-type') {
+				if(header.value.indexOf('text/html') === -1) {
+					log('DEBUG', "[STOPPING] tabId " + details.tabId + " has a none text/html content-type");
+					return;
+
+				}
+			}
+
+		}
+	}
 	const tabInfo = await (async () => {
 		try {
 			return await browser.tabs.get(details.tabId);
@@ -29,14 +44,14 @@ async function saveToStorage (details) {
 		}
 	})();
 	if(tabInfo === null){return;}
-	//log('DEBUG', "[CONTINUE] tabId " + details.tabId + " exists");
+	log('DEBUG', "[CONTINUE] tabId " + details.tabId + " exists");
 
 	//
 	if( tabInfo.url !== details.url) {
 		log('DEBUG', "[STOPPING] tabID "+ details.tabId +" with url " + details.url + "does not exist");
 		return;
 	}
-	//log('DEBUG', "[CONTINUE] tabId "+ details.tabId +" with url " + details.url + " exist");
+	log('DEBUG', "[CONTINUE] tabId "+ details.tabId +" with url " + details.url + " exist");
 
 	// 
 	const imgUri = await (async () => {
@@ -49,7 +64,7 @@ async function saveToStorage (details) {
 		}
 	})();
 	if(imgUri === null){return;}
-	//log('DEBUG', "[CONTINUE] tabId "+ details.tabId +" captured");
+	log('DEBUG', "[CONTINUE] tabId "+ details.tabId +" captured");
 		
 	//
 	try {
@@ -59,7 +74,7 @@ async function saveToStorage (details) {
 		url: details.url
 	});
 	//
-		//log('DEBUG', "[CONTINUE] tabId " + details.tabId + " wrote item to storage");
+		log('DEBUG', "[CONTINUE] tabId " + details.tabId + " wrote item to storage");
 	}catch(error){
 		log('ERROR', "[STOPPING] tabId " + details.tabId + " failed to write item to storage");
 	}
@@ -68,15 +83,15 @@ async function saveToStorage (details) {
 async function onCompleted (details) {
 
 	if (details.frameId !== 0) { 
-		//log('DEBUG', "[STOPPING] tabId " + details.tabId + " with url " + details.url + " is not a main frame"); 
+		log('DEBUG', "[STOPPING] tabId " + details.tabId + " with url " + details.url + " is not a main frame"); 
 		return; 
 	}
-	//log('DEBUG', "[CONTINUE] tabId " + details.tabId + " with url " + details.url + " is a main frame"); 
+	log('DEBUG', "[CONTINUE] tabId " + details.tabId + " with url " + details.url + " is a main frame"); 
 	//if ( !/^https?:\/\//.test(details.url) ){ 
 	//	log('DEBUG', "[STOPPING] tabId " + details.tabId + " with url " + details.url + " has an invalid protocol"); 
 	//	return; 
 	//}
-	//log('DEBUG', "[CONTINUE] tabId " + details.tabId + " with url " + details.url + " has an valid protocol"); 
+	log('DEBUG', "[CONTINUE] tabId " + details.tabId + " with url " + details.url + " has an valid protocol"); 
 
 	const delaytime = (await (async () => {
 		try {
@@ -98,7 +113,7 @@ async function onCompleted (details) {
 		
 	})());
 
-	//log('debug', '[INFO] delaytime := ' + delaytime);
+	log('debug', '[INFO] delaytime := ' + delaytime);
 	setTimeout( () => { saveToStorage(details); }, delaytime );
 }
 
@@ -106,6 +121,7 @@ function onBrowserActionClicked(tab) {
 	browser.tabs.create({url: "visualHistory.html"});
 }
 
-browser.webNavigation.onCompleted.addListener(onCompleted, { url: [ {schemes: ["http","https"]}]} ); 
+browser.webNavigation.onHistoryStateUpdated.addListener(onCompleted, { url: [ {schemes: ["http","https"]}]});
+//browser.webNavigation.onCompleted.addListener(onCompleted, { url: [ {schemes: ["http","https"]}]} ); 
 browser.browserAction.onClicked.addListener(onBrowserActionClicked);
-
+browser.webRequest.onCompleted.addListener(onCompleted, { urls: ['<all_urls>'], types: ["main_frame"] }, ["responseHeaders"]);
