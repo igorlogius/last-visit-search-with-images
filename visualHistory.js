@@ -130,7 +130,7 @@ $(document).ready(async function() {
 				for(var i = 0;i < filteredRows.length;i++) {
 					const data = filteredRows[i];
 					await idbKeyval.del(data.url);
-					console.log('deleted', data.url);
+					//console.log('deleted', data.url);
 				}
 				//await idbKeyval.clear();
 				loadTable();
@@ -191,9 +191,9 @@ $(document).ready(async function() {
 	function getDate( element ) {
 		var date;
 		try {
-			console.log(element.value);
+			//console.log(element.value);
 			date = $.datepicker.parseDate( dateFormat, element.value );
-			console.log(date.getTime()/1000);
+			//console.log(date.getTime()/1000);
 
 		} catch( error ) {
 			date = null;

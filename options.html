@@ -7,6 +7,21 @@
 <body>
 	<span> <input type="number" id="delaytime" value="5000" min="1000" size="8" /> time in milliseconds before a history item is created</span>
 
+	<form id="mainForm" accept-charset="utf-8" style="width:100%;">
+		<input type="submit" value="Save All Changes" />
+		<!--input id="impbtn_wrapper" type="button" name="impbtn" value="Import" />
+		<input id="impbtn" type="file" name="impbtn" value="" style="display:none;" />
+		<input id="expbtn" type="button" name="impbtn" value="Export" /-->
+		<table id="mainTable" border=1 style="width:100%;" >
+			<thead>
+				<th>Enable</th>
+				<th>Exclusion RegEx</th>
+				<th>Actions</th>
+			</thead>
+			<tbody id='mainTableBody' />
+		</table>
+			<div>
+	</form>
 
 	<script src="options.js"></script>
 </body>

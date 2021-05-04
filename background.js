@@ -21,7 +21,7 @@ function log() {
 async function saveToStorage (details) {
 
 	//log('debug', "saveToStorage");
-	// 
+	//
 	if(typeof details.responseHeaders !== 'undefined') {
 		for (let header of details.responseHeaders) {
 			//log('debug', header.name + ": " + header.value);
@@ -53,7 +53,7 @@ async function saveToStorage (details) {
 	}
 	log('DEBUG', "[CONTINUE] tabId "+ details.tabId +" with url " + details.url + " exist");
 
-	// 
+	//
 	const imgUri = await (async () => {
 		try {
 			const options = {"format":"jpeg","quality":6};
@@ -65,7 +65,7 @@ async function saveToStorage (details) {
 	})();
 	if(imgUri === null){return;}
 	log('DEBUG', "[CONTINUE] tabId "+ details.tabId +" captured");
-		
+
 	//
 	try {
 	await idbKeyval.set(details.url, {
@@ -82,16 +82,58 @@ async function saveToStorage (details) {
 
 async function onCompleted (details) {
 
-	if (details.frameId !== 0) { 
-		log('DEBUG', "[STOPPING] tabId " + details.tabId + " with url " + details.url + " is not a main frame"); 
-		return; 
+	if (details.frameId !== 0) {
+		log('DEBUG', "[STOPPING] tabId " + details.tabId + " with url " + details.url + " is not a main frame");
+		return;
 	}
-	log('DEBUG', "[CONTINUE] tabId " + details.tabId + " with url " + details.url + " is a main frame"); 
-	//if ( !/^https?:\/\//.test(details.url) ){ 
-	//	log('DEBUG', "[STOPPING] tabId " + details.tabId + " with url " + details.url + " has an invalid protocol"); 
-	//	return; 
+	log('DEBUG', "[CONTINUE] tabId " + details.tabId + " with url " + details.url + " is a main frame");
+	//if ( !/^https?:\/\//.test(details.url) ){
+	//	log('DEBUG', "[STOPPING] tabId " + details.tabId + " with url " + details.url + " has an invalid protocol");
+	//	return;
 	//}
-	log('DEBUG', "[CONTINUE] tabId " + details.tabId + " with url " + details.url + " has an valid protocol"); 
+	log('DEBUG', "[CONTINUE] tabId " + details.tabId + " with url " + details.url + " has an valid protocol");
+
+
+    const isExcluded = (await (async () => {
+
+
+        const selectors = await ((async () => {
+            try {
+                const tmp = await browser.storage.local.get('exclusions');
+                if(typeof tmp['exclusions'] !== 'undefined') {
+                    return tmp['exclusions'];
+                }
+            }catch(e){
+                console.error(e);
+            }
+            return [];
+        })());
+
+
+        for(const selector of selectors) {
+
+            //console.log(JSON.stringify(selector), details.url);
+            //console.log((new RegExp(selector.regex)).test(details.url))
+
+            try {
+                if(typeof selector.activ === 'boolean'
+                    && selector.activ === true
+                    && typeof selector.regex === 'string'
+                    && (new RegExp(selector.regex)).test(details.url)
+                ){
+                    return true;
+                }
+            }catch(e){
+                console.error(e);
+            }
+        }
+        return false;
+    })());
+
+    if(isExcluded) {
+		log('DEBUG', "[STOPPING] tabId " + details.tabId + " with url " + details.url + " is excluded");
+        return;
+    }
 
 	const delaytime = (await (async () => {
 		try {
@@ -100,7 +142,7 @@ async function onCompleted (details) {
 				tmp = parseInt(tmp['delaytime']);
 			}
 			//console.log('tmp ', typeof tmp);
-			
+
 			if(typeof tmp === 'number') {
 				if(tmp > 999){
 					return tmp;
@@ -110,18 +152,19 @@ async function onCompleted (details) {
 			console.error(e);
 		}
 		return 5000;
-		
+
 	})());
 
 	log('debug', '[INFO] delaytime := ' + delaytime);
 	setTimeout( () => { saveToStorage(details); }, delaytime );
 }
 
-function onBrowserActionClicked(tab) { 
+function onBrowserActionClicked(tab) {
+    //console.log('onBrowserActionClicked');
 	browser.tabs.create({url: "visualHistory.html"});
 }
 
 browser.webNavigation.onHistoryStateUpdated.addListener(onCompleted, { url: [ {schemes: ["http","https"]}]});
-//browser.webNavigation.onCompleted.addListener(onCompleted, { url: [ {schemes: ["http","https"]}]} ); 
+//browser.webNavigation.onCompleted.addListener(onCompleted, { url: [ {schemes: ["http","https"]}]} );
 browser.browserAction.onClicked.addListener(onBrowserActionClicked);
 browser.webRequest.onCompleted.addListener(onCompleted, { urls: ['<all_urls>'], types: ["main_frame"] }, ["responseHeaders"]);
