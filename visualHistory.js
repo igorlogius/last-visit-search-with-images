@@ -2,7 +2,7 @@ $(document).ready(async function() {
 
 
 	var dateFormat = "yy-mm-dd";
-	var table; 
+	var table;
 
 	$.fn.dataTable.ext.search.push(
 		function( settings, data, dataIndex ) {
@@ -40,12 +40,12 @@ $(document).ready(async function() {
 
 		//console.log('visualHistory.js: visualHistoryItems',visualHistoryItems);
 
-		dtdata = []
-		const entries = await idbKeyval.entries();
+		//dtdata = []
+		//const entries = await idbKeyval.entries();
 
-		entries.forEach(([key,value]) => {
-			dtdata.push(value);
-		});
+		//entries.forEach(([key,value]) => {
+		//	dtdata.push(value);
+		//});
 
 		table = $('#myTable').DataTable( {
 			"columnDefs": [
@@ -59,11 +59,29 @@ $(document).ready(async function() {
 			"destroy": true,
 			"deferRender": true,
 			"stateSave": true,
-			"data": dtdata,
+			//"data": dtdata,
+            "ajax": function (data, callback, settings) {
+
+                //console.log(data);
+
+                idbKeyval.entries().then( function(entries) {
+                    //console.log(entries);
+
+                let dtdata = [];
+                entries.forEach(([key,value]) => {
+                    dtdata.push(value);
+                });
+
+                callback(
+                    //JSON.parse( localStorage.getItem('dataTablesData') )
+                    { data: dtdata }
+                );
+                }).catch(console.error);
+            },
 			"dom": '<"top"iflprt><"bottom"iflp><"clear">',
 			"lengthMenu": [ [50, 100, 250, 500, -1], [50, 100, 250, 500, "All"] ],
 			"columns": [
-				{ "data": "ts" 
+				{ "data": "ts"
 					, "render": function(data, type, row, meta) {
 						const d = new Date(data);
 						str = d.getFullYear() + "-";
@@ -81,12 +99,12 @@ $(document).ready(async function() {
 						return type === 'display' ? str : data;
 					}
 				}
-				,{ "data": "url" 
+				,{ "data": "url"
 					,"render": function(data, type,row, meta) {
 						return type === 'display' ? '<a class="urlcell" target="_blank" href="' + data + '" a>' + data + '</a>' : data;
 					}
 				}
-				,{ "data": "img" 
+				,{ "data": "img"
 					,"render": function(data, type,row, meta) {
 						return type === 'display' ? '<img src="' + data + '" width="250px" />': data;
 					}
@@ -100,7 +118,7 @@ $(document).ready(async function() {
 
 		function toggleRowSelection() {
 			$(this).toggleClass('selected');
-		} 
+		}
 
 		$('#nuke').on("click",nuke);
 
@@ -116,7 +134,7 @@ $(document).ready(async function() {
 				}
 				//await idbKeyval.clear();
 				loadTable();
-			} 
+			}
 		}
 
 		$('#button').click( async function () {
