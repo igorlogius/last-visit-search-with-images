@@ -106,7 +106,7 @@ $(document).ready(async function() {
 				}
 				,{ "data": "img"
 					,"render": function(data, type,row, meta) {
-						return type === 'display' ? '<img src="' + data + '" width="250px" />': data;
+						return type === 'display' ? '<img src="' + data + '" width="250px" class="thumbnail" />': data;
 					}
 				}
 			]
