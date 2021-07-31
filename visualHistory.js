@@ -38,15 +38,14 @@ $(document).ready(async function() {
 	);
 	async function loadTable(){
 
+		/*
 		const entries = await idbKeyval.entries();
 		const entries_length = entries.length;
-
-
 		const dtdata = [];
-		
-		for(let i= 0;i< entries_length;++i){ // sadly still the fastes 
+		for(let i= 0;i< entries_length;++i){ 
 			dtdata.push(entries[i][1]);
 		}
+		*/
 		//(await idbKeyval.entries()).map( val => val[1]);
 
 		table = $('#myTable').DataTable( {
@@ -56,30 +55,21 @@ $(document).ready(async function() {
 			"processing": true,
 			'language': {
 				'loadingRecords': '&nbsp;',
-				'processing': 'Loading...'
+				'processing': 'Loading data, ... please wait'
 			},
 			"destroy": true,
 			"deferRender": true,
 			"stateSave": true,
-			"data": dtdata,
-            /*"ajax": function (data, callback, settings) {
-
-                //console.log(data);
-
-                idbKeyval.entries().then( function(entries) {
-                    //console.log(entries);
-
-                let dtdata = [];
-                entries.forEach(([key,value]) => {
-                    dtdata.push(value);
-                });
-
-                callback(
-                    //JSON.parse( localStorage.getItem('dataTablesData') )
-                    { data: dtdata }
-                );
-                }).catch(console.error);
-            },*/
+			//"data": dtdata,
+			"ajax": async function (data, callback, settings) {
+				const entries = await idbKeyval.entries();
+				const entries_length = entries.length;
+				const dtdata = [];
+				for(let i= 0;i< entries_length;++i){ // still the fastes 
+					dtdata.push(entries[i][1]);
+				}
+				callback({data:dtdata});
+			},
 			"dom": '<"top"iflprt><"bottom"iflp><"clear">',
 			"lengthMenu": [ [50, 100, 250, 500, -1], [50, 100, 250, 500, "All"] ],
 			"columns": [
