@@ -38,14 +38,16 @@ $(document).ready(async function() {
 	);
 	async function loadTable(){
 
-		//console.log('visualHistory.js: visualHistoryItems',visualHistoryItems);
+		const entries = await idbKeyval.entries();
+		const entries_length = entries.length;
 
-		//dtdata = []
-		//const entries = await idbKeyval.entries();
 
-		//entries.forEach(([key,value]) => {
-		//	dtdata.push(value);
-		//});
+		const dtdata = [];
+		
+		for(let i= 0;i< entries_length;++i){ // sadly still the fastes 
+			dtdata.push(entries[i][1]);
+		}
+		//(await idbKeyval.entries()).map( val => val[1]);
 
 		table = $('#myTable').DataTable( {
 			"columnDefs": [
@@ -59,8 +61,8 @@ $(document).ready(async function() {
 			"destroy": true,
 			"deferRender": true,
 			"stateSave": true,
-			//"data": dtdata,
-            "ajax": function (data, callback, settings) {
+			"data": dtdata,
+            /*"ajax": function (data, callback, settings) {
 
                 //console.log(data);
 
@@ -77,7 +79,7 @@ $(document).ready(async function() {
                     { data: dtdata }
                 );
                 }).catch(console.error);
-            },
+            },*/
 			"dom": '<"top"iflprt><"bottom"iflp><"clear">',
 			"lengthMenu": [ [50, 100, 250, 500, -1], [50, 100, 250, 500, "All"] ],
 			"columns": [
@@ -112,8 +114,6 @@ $(document).ready(async function() {
 			]
 		} );
 
-		//alert( 'There are'+table.data().length+' row(s) of data in this table' );
-
 		$('#myTable tbody').on( 'click', 'tr', toggleRowSelection);
 
 		function toggleRowSelection() {
@@ -126,22 +126,16 @@ $(document).ready(async function() {
 
 			if (confirm('Are you sure you want delete all displayed (aka. currently visible) entries?')) {
 				var filteredRows = table.rows({filter: 'applied'}).data();
-				//console.log(filteredRows);
 				for(var i = 0;i < filteredRows.length;i++) {
 					const data = filteredRows[i];
+					table.row(data).remove();
 					await idbKeyval.del(data.url);
-					//console.log('deleted', data.url);
 				}
-				//await idbKeyval.clear();
-				loadTable();
+				table.draw();
 			}
 		}
 
 		$('#button').click( async function () {
-
-			//console.log('button', );
-			//console.log(data);
-			//return;
 
 			const selected = $('#myTable tbody tr.selected');
 
@@ -150,15 +144,13 @@ $(document).ready(async function() {
 				return;
 			}
 
-			$('#myTable tbody').off( 'click', 'tr', toggleRowSelection);
-			$('#nuke').off("click",nuke);
-
 			for (let $el of selected ) {
 				var data = table.row($el).data();
 				await idbKeyval.del(data.url);
+				table.row($el).remove();
 			}
+			table.draw();
 
-			loadTable();
 		} );
 	}
 	loadTable();
@@ -191,10 +183,7 @@ $(document).ready(async function() {
 	function getDate( element ) {
 		var date;
 		try {
-			//console.log(element.value);
 			date = $.datepicker.parseDate( dateFormat, element.value );
-			//console.log(date.getTime()/1000);
-
 		} catch( error ) {
 			date = null;
 			console.error(error);
