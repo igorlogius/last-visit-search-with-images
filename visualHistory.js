@@ -1,4 +1,4 @@
-$(document).ready(async function() {
+$(document).ready(function() {
 
 
 	var dateFormat = "yy-mm-dd";
@@ -36,31 +36,25 @@ $(document).ready(async function() {
 			return false;
 		}
 	);
-	async function loadTable(){
+	function loadTable(){
 
-		/*
-		const entries = await idbKeyval.entries();
-		const entries_length = entries.length;
-		const dtdata = [];
-		for(let i= 0;i< entries_length;++i){ 
-			dtdata.push(entries[i][1]);
-		}
-		*/
-		//(await idbKeyval.entries()).map( val => val[1]);
-
-		table = $('#myTable').DataTable( {
+		table = $('#myTable')
+			 /*.on( 'processing.dt', function ( e, settings, processing ) {
+		        	$('#processingIndicator').css( 'display', processing ? 'block' : 'none' );
+    			})*/
+			.DataTable( {
 			"columnDefs": [
 				{ orderable: false , targets: 2}
 			],
 			"processing": true,
 			'language': {
 				'loadingRecords': '&nbsp;',
-				'processing': 'Loading data, ... please wait'
+				'processing': 'Please wait, processing records',
+				'loadingRecords': "Please wait, loading records"
 			},
-			"destroy": true,
+			"destroy": false,
 			"deferRender": true,
 			"stateSave": true,
-			//"data": dtdata,
 			"ajax": async function (data, callback, settings) {
 				const entries = await idbKeyval.entries();
 				const entries_length = entries.length;
@@ -71,7 +65,7 @@ $(document).ready(async function() {
 				callback({data:dtdata});
 			},
 			"dom": '<"top"iflprt><"bottom"iflp><"clear">',
-			"lengthMenu": [ [50, 100, 250, 500, -1], [50, 100, 250, 500, "All"] ],
+			"lengthMenu": [ [25, 50, 100, 250, 500, -1], [25, 50, 100, 250, 500, "All"] ],
 			"columns": [
 				{ "data": "ts"
 					, "render": function(data, type, row, meta) {
@@ -104,6 +98,8 @@ $(document).ready(async function() {
 			]
 		} );
 
+
+
 		$('#myTable tbody').on( 'click', 'tr', toggleRowSelection);
 
 		function toggleRowSelection() {
@@ -112,35 +108,38 @@ $(document).ready(async function() {
 
 		$('#nuke').on("click",nuke);
 
-		async function nuke() {
+		function nuke() {
 
-			if (confirm('Are you sure you want delete all displayed (aka. currently visible) entries?')) {
-				var filteredRows = table.rows({page: 'current', filter: 'applied'}).data();
-				var filteredRows_len = filteredRows.length;
-				for(var i = 0;i < filteredRows_len;i++) {
-					const data = filteredRows[i];
-					await idbKeyval.del(data.url);
-					table.row(data).remove();
-				}
-				table.draw('page');
+			if (!confirm('Are you sure you want delete all displayed (aka. currently visible) entries?')) {
+				return;
 			}
+			const filteredRows = table.rows({page: 'current', filter: 'applied'});
+			const filteredRows_data = filteredRows.data();
+			const filteredRows_len = filteredRows_data.length;
+			if(filteredRows_len < 1){
+				alert('nothing to delete on the current page');
+				return;
+			}
+			for(let i = 0;i < filteredRows_len; i++) {
+				console.log(filteredRows_data[i].url);
+				idbKeyval.del(filteredRows_data[i].url);
+			}
+			filteredRows.remove().draw();
 		}
 
-		$('#button').click( async function () {
+		$('#button').click( function () {
 
-			const selected = $('#myTable tbody tr.selected');
-
-			if(selected.length < 1){
+			const filteredRows = table.rows('.selected'); 
+			const filteredRows_data = filteredRows.data();
+			const filteredRows_len = filteredRows_data.length;
+			if(filteredRows_len < 1){
 				alert('no rows selected');
 				return;
 			}
-
-			for (let $el of selected ) {
-				var data = table.row($el).data();
-				await idbKeyval.del(data.url);
-				table.row($el).remove();
+			for(let i = 0;i < filteredRows_len;i++) {
+				idbKeyval.del(filteredRows_data[i].url);
 			}
-			table.draw('page');
+			filteredRows.remove().draw();
 
 		} );
 	}
