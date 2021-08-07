@@ -48,23 +48,34 @@ $(document).ready(function() {
 			],
 			"processing": true,
 			'language': {
-				'loadingRecords': '&nbsp;',
-				'processing': 'Please wait, processing records',
-				'loadingRecords': "Please wait, loading records"
+				'processing': '<p>Processing,</p><p>please wait</p>',
+				'loadingRecords': "<p>Loading,</p><p>please wait</p>"
 			},
-			"destroy": false,
+			/*"destroy": false,*/
 			"deferRender": true,
 			"stateSave": true,
 			"ajax": async function (data, callback, settings) {
 				const entries = await idbKeyval.entries();
 				const entries_length = entries.length;
 				const dtdata = [];
+				/*function timeout(ms) {
+					return new Promise(resolve => setTimeout(resolve, ms))
+				}*/
+
+				const prog_id = 'loadingprogress';
+		        	$('#myTable_processing')[0].innerHTML = '<progress style="width:45%" id="' + prog_id + '" value="0" max="' + entries_length + '"></progress>' 
+				const el = $('#' + prog_id )[0];
+
 				for(let i= 0;i< entries_length;++i){ // still the fastes 
 					dtdata.push(entries[i][1]);
+
+		        		//$('#myTable_processing')[0].innerText = 'Loading records ' + i + ' of ' + entries_length + ' done';
+					el.value = i;
+					//await timeout(Math.random() * 1000 + 500);
 				}
 				callback({data:dtdata});
 			},
-			"dom": '<"top"iflprt><"bottom"iflp><"clear">',
+				"dom": '<"top"flip>rt<"bottom"flip>',
 			"lengthMenu": [ [25, 50, 100, 250, 500, -1], [25, 50, 100, 250, 500, "All"] ],
 			"columns": [
 				{ "data": "ts"
@@ -100,15 +111,11 @@ $(document).ready(function() {
 
 
 
-		$('#myTable tbody').on( 'click', 'tr', toggleRowSelection);
-
-		function toggleRowSelection() {
+		$('#myTable tbody').on( 'click', 'tr', function () {
 			$(this).toggleClass('selected');
-		}
+		});
 
-		$('#nuke').on("click",nuke);
-
-		function nuke() {
+		$('#removeDisplayed').click(function() {
 
 			if (!confirm('Are you sure you want delete all displayed (aka. currently visible) entries?')) {
 				return;
@@ -125,10 +132,13 @@ $(document).ready(function() {
 				idbKeyval.del(filteredRows_data[i].url);
 			}
 			filteredRows.remove().draw();
-		}
+		});
 
-		$('#button').click( function () {
+		$('#removeSelected').click( function () {
 
+			if (!confirm('Are you sure you want delete the selected entries?')) {
+				return;
+			}
 			const filteredRows = table.rows('.selected'); 
 			const filteredRows_data = filteredRows.data();
 			const filteredRows_len = filteredRows_data.length;
@@ -141,7 +151,7 @@ $(document).ready(function() {
 			}
 			filteredRows.remove().draw();
 
-		} );
+		});
 	}
 	loadTable();
 
@@ -157,8 +167,8 @@ $(document).ready(function() {
 		.on( "change", function() {
 			to.datepicker( "option", "minDate", getDate( this ) );
 			table.draw();
-		}),
-		to = $( "#to" ).datepicker({
+		});
+	var to = $( "#to" ).datepicker({
 			dateFormat: dateFormat,
 			//defaultDate: "+1w",
 			changeMonth: true,
@@ -170,6 +180,9 @@ $(document).ready(function() {
 			table.draw();
 		});
 
+	$('#resetFrom').click( () => { $('#from').val(''); table.draw();});
+	$('#resetTo').click( () => { $('#to').val('');table.draw(); });
+
 	function getDate( element ) {
 		var date;
 		try {
@@ -178,7 +191,6 @@ $(document).ready(function() {
 			date = null;
 			console.error(error);
 		}
-
 		return date;
 	}
 

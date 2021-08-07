@@ -10,14 +10,15 @@
 		<hr>
 		<span>|</span>
 		<b>Delete:</b> 
-		<button id="nuke">displayed</button>
-		<button id="button">selected</button>
+		<button id="removeDisplayed">displayed</button>
+		<button id="removeSelected">selected</button>
 		<span>|</span>
 		<div style="float:right">
 		<span>|</span>
 		<b>Filter by Date:</b>
-		<input type="text" id="from" name="from" style="width:6vw;" placeholder="From">
-		<input type="text" id="to" name="to" style="width:6vw;" placeholder="To">		
+		<input type="text" id="from" name="from" style="width:6vw;" placeholder="From"><input type="button" id="resetFrom" value="clear"/>
+		<input type="text" id="to" name="to" style="width:6vw;" placeholder="To"><input type="button" id="resetTo" value="clear"/>
+	
 		<span>|</span>
 		</div>
 		<hr>
@@ -31,10 +32,11 @@
 			</thead>
 			<tbody>
 			</tbody>
+
 			<tfoot>
 				<tr>
 					<th>timeStamp (last visit)</th>
-					<th>url /link</th>
+					<th>url / link</th>
 					<th>thumbnail</th>
 				</tr>
 			</tfoot>
