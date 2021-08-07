@@ -115,11 +115,12 @@ $(document).ready(async function() {
 		async function nuke() {
 
 			if (confirm('Are you sure you want delete all displayed (aka. currently visible) entries?')) {
-				var filteredRows = table.rows({filter: 'applied'}).data();
-				for(var i = 0;i < filteredRows.length;i++) {
+				var filteredRows = table.rows({page: 'current', filter: 'applied'}).data();
+				var filteredRows_len = filteredRows.length;
+				for(var i = 0;i < filteredRows_len;i++) {
 					const data = filteredRows[i];
-					table.row(data).remove();
 					await idbKeyval.del(data.url);
+					table.row(data).remove();
 				}
 				table.draw();
 			}
