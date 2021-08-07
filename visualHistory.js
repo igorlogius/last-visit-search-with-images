@@ -48,8 +48,8 @@ $(document).ready(function() {
 			],
 			"processing": true,
 			'language': {
-				'processing': '<p>Processing,</p><p>please wait</p>',
-				'loadingRecords': "<p>Loading,</p><p>please wait</p>"
+				'processing': 'Processing, please wait',
+				'loadingRecords': "Loading,<br/> please wait"
 			},
 			/*"destroy": false,*/
 			"deferRender": true,
@@ -58,24 +58,28 @@ $(document).ready(function() {
 				const entries = await idbKeyval.entries();
 				const entries_length = entries.length;
 				const dtdata = [];
-				/*function timeout(ms) {
+				function timeout(ms) {
 					return new Promise(resolve => setTimeout(resolve, ms))
-				}*/
+				}
 
 				const prog_id = 'loadingprogress';
-		        	$('#myTable_processing')[0].innerHTML = '<progress style="width:45%" id="' + prog_id + '" value="0" max="' + entries_length + '"></progress>' 
+		        	$('#myTable_processing')[0].innerHTML = '<progress style="width:45%" id="' + prog_id + '" value="0" max="100"></progress>' 
 				const el = $('#' + prog_id )[0];
+
+				function percentage(partialValue, totalValue) {
+					return (100 * partialValue) / totalValue;
+				}
 
 				for(let i= 0;i< entries_length;++i){ // still the fastes 
 					dtdata.push(entries[i][1]);
-
 		        		//$('#myTable_processing')[0].innerText = 'Loading records ' + i + ' of ' + entries_length + ' done';
-					el.value = i;
+					el.value = parseInt(percentage(i,entries_length));
+					//console.log(el.value);
 					//await timeout(Math.random() * 1000 + 500);
 				}
 				callback({data:dtdata});
 			},
-				"dom": '<"top"flip>rt<"bottom"flip>',
+			"dom": '<"top"flip>rt<"bottom"flip>',
 			"lengthMenu": [ [25, 50, 100, 250, 500, -1], [25, 50, 100, 250, 500, "All"] ],
 			"columns": [
 				{ "data": "ts"
