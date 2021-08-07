@@ -122,7 +122,7 @@ $(document).ready(async function() {
 					await idbKeyval.del(data.url);
 					table.row(data).remove();
 				}
-				table.draw();
+				table.draw('page');
 			}
 		}
 
@@ -140,7 +140,7 @@ $(document).ready(async function() {
 				await idbKeyval.del(data.url);
 				table.row($el).remove();
 			}
-			table.draw();
+			table.draw('page');
 
 		} );
 	}
