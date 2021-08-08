@@ -49,7 +49,7 @@ $(document).ready(function() {
 			"processing": true,
 			'language': {
 				'processing': '<div id="outerProgress"><div id="innerProgress"></div></div>',
-				'loadingRecords': "Loading,<br/> please wait"
+				'loadingRecords': "Loading,<br/>please wait"
 			},
 			/*"destroy": false,*/
 			"deferRender": true,
@@ -71,18 +71,25 @@ $(document).ready(function() {
 
 				let i = 0;
 				let intervalId = setInterval(() => {
-					el.style.width = parseInt(percentage(i,entries_length)) + "%";
-				},5);
+					const val = parseInt(percentage(i,entries_length))
+					el.style.width =  val + "%";
+					el.innerText = val + "%";
+				},100);
 
 				for(;i< entries_length;++i){ // still the fastes 
 					dtdata.push(entries[i][1]);
 		        		//$('#myTable_processing')[0].innerText = 'Loading records ' + i + ' of ' + entries_length + ' done';
 					//console.log(el.value);
-					await timeout(5);
+					/*const val = parseInt(percentage(i,entries_length))
+					el.style.width =  val + "%";
+					el.innerText = val + "%";*/
+					await timeout(1);
 				}
 				clearInterval(intervalId);
 				el.style.width = "100%";
+				el.innerText = "done";
 				await timeout(100);
+
 				callback({data:dtdata});
 			},
 			"dom": '<"top"flip>rt<"bottom"flip>',

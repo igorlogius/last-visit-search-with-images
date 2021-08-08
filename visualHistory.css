@@ -44,4 +44,5 @@ table.dataTable tbody td:nth-child(3) {
   width: 0%;
   height: 30px;
   background-color: darkgray;
+  line-height: 30px;
 }
