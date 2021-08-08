@@ -48,7 +48,6 @@ $(document).ready(function() {
 			],
 			"processing": true,
 			'language': {
-				'processing': 'Processing, please wait',
 				'loadingRecords': "Loading,<br/> please wait"
 			},
 			/*"destroy": false,*/
@@ -62,21 +61,25 @@ $(document).ready(function() {
 					return new Promise(resolve => setTimeout(resolve, ms))
 				}
 
-				const prog_id = 'loadingprogress';
-		        	$('#myTable_processing')[0].innerHTML = '<progress style="width:45%" id="' + prog_id + '" value="0" max="100"></progress>' 
-				const el = $('#' + prog_id )[0];
+		        	$('#myTable_processing')[0].innerHTML = '<div id="outerProgress"><div id="innerProgress"></div></div>';
+				const el = document.getElementById("innerProgress");
 
 				function percentage(partialValue, totalValue) {
 					return (100 * partialValue) / totalValue;
 				}
 
-				for(let i= 0;i< entries_length;++i){ // still the fastes 
+				let i = 0;
+				let intervalId = setInterval(() => {
+					el.style.width = parseInt(percentage(i,entries_length)) + "%";
+				},1000);
+
+				for(;i< entries_length;++i){ // still the fastes 
 					dtdata.push(entries[i][1]);
 		        		//$('#myTable_processing')[0].innerText = 'Loading records ' + i + ' of ' + entries_length + ' done';
-					el.value = parseInt(percentage(i,entries_length));
 					//console.log(el.value);
-					//await timeout(Math.random() * 1000 + 500);
+					//await timeout(Math.random() * 100 + 500);
 				}
+				clearInterval(intervalId);
 				callback({data:dtdata});
 			},
 			"dom": '<"top"flip>rt<"bottom"flip>',
