@@ -48,6 +48,7 @@ $(document).ready(function() {
 			],
 			"processing": true,
 			'language': {
+				'processing': '<div id="outerProgress"><div id="innerProgress"></div></div>',
 				'loadingRecords': "Loading,<br/> please wait"
 			},
 			/*"destroy": false,*/
@@ -61,7 +62,7 @@ $(document).ready(function() {
 					return new Promise(resolve => setTimeout(resolve, ms))
 				}
 
-		        	$('#myTable_processing')[0].innerHTML = '<div id="outerProgress"><div id="innerProgress"></div></div>';
+		        	//$('#myTable_processing')[0].innerHTML = '<div id="outerProgress"><div id="innerProgress"></div></div>';
 				const el = document.getElementById("innerProgress");
 
 				function percentage(partialValue, totalValue) {
@@ -71,15 +72,17 @@ $(document).ready(function() {
 				let i = 0;
 				let intervalId = setInterval(() => {
 					el.style.width = parseInt(percentage(i,entries_length)) + "%";
-				},1000);
+				},5);
 
 				for(;i< entries_length;++i){ // still the fastes 
 					dtdata.push(entries[i][1]);
 		        		//$('#myTable_processing')[0].innerText = 'Loading records ' + i + ' of ' + entries_length + ' done';
 					//console.log(el.value);
-					//await timeout(Math.random() * 100 + 500);
+					await timeout(5);
 				}
 				clearInterval(intervalId);
+				el.style.width = "100%";
+				await timeout(100);
 				callback({data:dtdata});
 			},
 			"dom": '<"top"flip>rt<"bottom"flip>',
