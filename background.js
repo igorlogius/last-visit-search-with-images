@@ -161,7 +161,7 @@ async function onCompleted (details) {
 
 function onBrowserActionClicked(tab) {
     //console.log('onBrowserActionClicked');
-	browser.tabs.create({url: "visualHistory.html"});
+	browser.tabs.create({url: "main.html"});
 }
 
 browser.webNavigation.onHistoryStateUpdated.addListener(onCompleted, { url: [ {schemes: ["http","https"]}]});
