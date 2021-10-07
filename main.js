@@ -174,6 +174,19 @@ $(document).ready(function() {
 		$(this).toggleClass('selected');
 	});
 
+	$('#myTable_filter input').unbind();
+	$('#myTable_filter input').bind('keyup', function(e) {
+		if(e.keyCode == 13) {
+			table.search(this.value).draw();
+		}
+	});
+
+	$('#searchBtn').click(function(){ 
+		table.search(
+			$('#myTable_filter input').val()
+		).draw(); 
+	});
+
 	$('#removeDisplayed').click(function() {
 		const filteredRows = table.rows({page: 'current', filter: 'applied'});
 		const filteredRows_data = filteredRows.data();
@@ -235,6 +248,9 @@ $(document).ready(function() {
 
 	$('#resetFrom').click(function(){ $('#from').val(''); table.draw();});
 	$('#resetTo').click(function(){ $('#to').val('');table.draw(); });
+	$('#resetSearchBtn').click(function(){ table.search('').draw(); });
+
+			
 
 	function getDate( element ) {
 			console.log('getDate',element.value);
