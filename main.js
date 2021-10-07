@@ -47,14 +47,95 @@ $(document).ready(function() {
 		],
 		'processing': true,
 		'language': {
-			//'processing': '<div id="outerProgress"><div id="innerProgress"></div></div>',
+		        'processing': '<div id="outerProgress"><div id="innerProgress"></div></div>',
 			'loadingRecords': "Loading,<br/>please wait"
 		},
 		"deferRender": true,
 		"stateSave": true,
+                       "ajax": async function (data, callback, settings) {
+                               const entries = await idbKeyval.entries();
+                               const entries_length = entries.length;
+                               const dtdata = [];
+                               function timeout(ms) {
+                                       return new Promise(resolve => setTimeout(resolve, ms))
+                               }
+
+                               //$('#myTable_processing')[0].innerHTML = '<div id="outerProgress"><div id="innerProgress"></div></div>';
+                               const el = document.getElementById("innerProgress");
+
+                               function percentage(partialValue, totalValue) {
+                                       return (100 * partialValue) / totalValue;
+                               }
+
+                               let i = 0;
+                               let intervalId = setInterval(() => {
+                                       const val = parseInt(percentage(i,entries_length))
+                                       el.style.width =  val + "%";
+                                       el.innerText = val + "%";
+                               },100);
+
+                               for(;i< entries_length;++i){ // still the fastes 
+                                       dtdata.push(entries[i][1]);
+                                       //$('#myTable_processing')[0].innerText = 'Loading records ' + i + ' of ' + entries_length + ' done';
+                                       //console.log(el.value);
+                                       /*const val = parseInt(percentage(i,entries_length))
+                                       el.style.width =  val + "%";
+                                       el.innerText = val + "%";*/
+                                       await timeout(1);
+                               }
+                               clearInterval(intervalId);
+                               el.style.width = "100%";
+                               el.innerText = "done";
+                               await timeout(100);
+
+                               callback({data:dtdata});
+                       },
+
+		/*
 		"ajax": async function(data, callback, settings)  {
+			
+			///
+			//
+			
+
+			       const entries = await idbKeyval.entries();
+                               const entries_length = entries.length;
+                               const dtdata = [];
+                               function timeout(ms) {
+                                       return new Promise(resolve => setTimeout(resolve, ms))
+                               }
+
+                               const el = document.getElementById("innerProgress");
+
+                               function percentage(partialValue, totalValue) {
+                                       return (100 * partialValue) / totalValue;
+                               }
+
+                               let i = 0;
+                               let intervalId = setInterval(() => {
+                                       const val = parseInt(percentage(i,entries_length))
+                                       el.style.width =  val + "%";
+                                       el.innerText = val + "%";
+                               },100);
+
+                               for(;i< entries_length;++i){ // still the fastes
+                                       //dtdata.push(entries[i][1]);
+                                       await timeout(1);
+                               }
+                               clearInterval(intervalId);
+                               el.style.width = "100%";
+                               el.innerText = "done";
+                               await timeout(100);
+
+                               callback({data:dtdata});
+
+			//
+			//
+
+
 			callback({data: (await idbKeyval.values())});
 		},
+		*/
 		"dom": '<"top"flip>rt<"bottom"flip>',
 		"lengthMenu": [ [25, 50, 100, 250, 500, -1], [25, 50, 100, 250, 500, "All"] ],
 		"columns": [
