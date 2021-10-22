@@ -47,12 +47,13 @@ $(document).ready(function() {
 		],
 		'processing': true,
 		'language': {
-		        'processing': '<div id="outerProgress"><div id="innerProgress"></div></div>',
+		        //'processing': '<div id="outerProgress"><div id="innerProgress"></div></div>',
 			'loadingRecords': "Loading,<br/>please wait"
 		},
 		"deferRender": true,
 		"stateSave": true,
                        "ajax": async function (data, callback, settings) {
+			       /*
                                const entries = await idbKeyval.entries();
                                const entries_length = entries.length;
                                const dtdata = [];
@@ -78,9 +79,9 @@ $(document).ready(function() {
                                        dtdata.push(entries[i][1]);
                                        //$('#myTable_processing')[0].innerText = 'Loading records ' + i + ' of ' + entries_length + ' done';
                                        //console.log(el.value);
-                                       /*const val = parseInt(percentage(i,entries_length))
-                                       el.style.width =  val + "%";
-                                       el.innerText = val + "%";*/
+                                       //const val = parseInt(percentage(i,entries_length))
+                                       //el.style.width =  val + "%";
+                                       //el.innerText = val + "%";
                                        await timeout(1);
                                }
                                clearInterval(intervalId);
@@ -88,16 +89,15 @@ $(document).ready(function() {
                                el.innerText = "done";
                                await timeout(100);
 
+
                                callback({data:dtdata});
+			       */
+			       callback({data: (await idbKeyval.values()) });
                        },
 
 		/*
 		"ajax": async function(data, callback, settings)  {
 			
-			///
-			//
-			
-
 			       const entries = await idbKeyval.entries();
                                const entries_length = entries.length;
                                const dtdata = [];
@@ -136,7 +136,7 @@ $(document).ready(function() {
 			callback({data: (await idbKeyval.values())});
 		},
 		*/
-		"dom": '<"top"flip>rt<"bottom"flip>',
+		"dom": '<"top"flip>rt',
 		"lengthMenu": [ [25, 50, 100, 250, 500, -1], [25, 50, 100, 250, 500, "All"] ],
 		"columns": [
 			{ "data": "ts"
@@ -164,7 +164,7 @@ $(document).ready(function() {
 			}
 			,{ "data": "img"
 				,"render": function(data, type,row, meta) {
-					return type === 'display' ? '<img src="' + data + '" width="250px" class="thumbnail" />': data;
+					return type === 'display' ? '<img loading="lazy" src="' + data + '" width="250px" class="thumbnail" />': data;
 				}
 			}
 		]

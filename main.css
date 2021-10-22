@@ -31,9 +31,9 @@ table.dataTable tbody td:nth-child(3) {
     left:-35px;*/
     display:block;
     z-index:999;
-    transform: scale(2.3);
+    transform: scale(2.6);
 }
-
+/*
 #outerProgress {
   margin-left:25%;
   width: 50%;
@@ -46,3 +46,4 @@ table.dataTable tbody td:nth-child(3) {
   background-color: darkgray;
   line-height: 30px;
 }
+*/
