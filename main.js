@@ -1,8 +1,8 @@
 
-let idbKeyval = new TKVS('keyval-store','keyval');
 
 $(document).ready(function() {
 
+    let idbKeyval = new TKVS('keyval-store','keyval');
 
 	const dateFormat = "yy-mm-dd";
 
