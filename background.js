@@ -3,6 +3,8 @@ const temporary = browser.runtime.id.endsWith('@temporary-addon'); // debugging?
 const manifest = browser.runtime.getManifest();
 const extname = manifest.name;
 
+let tkvs = new TKVS('keyval-store','keyval');
+
 function log() {
 	if(arguments.length < 2){
 		throw 'invalid number of arguments';
@@ -68,7 +70,7 @@ async function saveToStorage (details) {
 
 	//
 	try {
-	await idbKeyval.set(details.url, {
+	await tkvs.set(details.url, {
 		ts: details.timeStamp,
 		img: imgUri,
 		url: details.url

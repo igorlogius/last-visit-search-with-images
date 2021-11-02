@@ -2,7 +2,7 @@
   "author": "igorlogius",
   "background": {
     "scripts": [
-      "idb-keyval.js",
+      "TKVS.js",
       "background.js"
     ]
   },
@@ -27,5 +27,5 @@
     "webRequest",
     "<all_urls>"
   ],
-  "version": "1.15.12"
+  "version": "1.16.12"
 }

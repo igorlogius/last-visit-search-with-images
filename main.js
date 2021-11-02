@@ -1,4 +1,8 @@
+
+let idbKeyval = new TKVS('keyval-store','keyval');
+
 $(document).ready(function() {
+
 
 	const dateFormat = "yy-mm-dd";
 
@@ -75,7 +79,7 @@ $(document).ready(function() {
                                        el.innerText = val + "%";
                                },100);
 
-                               for(;i< entries_length;++i){ // still the fastes 
+                               for(;i< entries_length;++i){ // still the fastes
                                        dtdata.push(entries[i][1]);
                                        //$('#myTable_processing')[0].innerText = 'Loading records ' + i + ' of ' + entries_length + ' done';
                                        //console.log(el.value);
@@ -97,7 +101,7 @@ $(document).ready(function() {
 
 		/*
 		"ajax": async function(data, callback, settings)  {
-			
+
 			       const entries = await idbKeyval.entries();
                                const entries_length = entries.length;
                                const dtdata = [];
@@ -181,10 +185,10 @@ $(document).ready(function() {
 		}
 	});
 
-	$('#searchBtn').click(function(){ 
+	$('#searchBtn').click(function(){
 		table.search(
 			$('#myTable_filter input').val()
-		).draw(); 
+		).draw();
 	});
 
 	$('#removeDisplayed').click(function() {
@@ -205,7 +209,7 @@ $(document).ready(function() {
 	});
 
 	$('#removeSelected').click( function () {
-		const filteredRows = table.rows('.selected'); 
+		const filteredRows = table.rows('.selected');
 		const filteredRows_data = filteredRows.data();
 		const filteredRows_len = filteredRows_data.length;
 		if(filteredRows_len < 1){
@@ -250,7 +254,7 @@ $(document).ready(function() {
 	$('#resetTo').click(function(){ $('#to').val('');table.draw(); });
 	$('#resetSearchBtn').click(function(){ table.search('').draw(); });
 
-			
+
 
 	function getDate( element ) {
 			console.log('getDate',element.value);
