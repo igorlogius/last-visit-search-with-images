@@ -37,7 +37,7 @@ $(document).ready(function() {
 
 			const age = parseFloat( data[0] ) || 0; // use data for the age column
 
-			console.log('min: ' + min, " max: ", max, " value: ", data[0]);
+			//console.log('min: ' + min, " max: ", max, " value: ", data[0]);
 
 			return ( ( isNaN( min ) && isNaN( max ) ) ||
 				( isNaN( min ) && age <= max ) ||
@@ -257,7 +257,7 @@ $(document).ready(function() {
 
 
 	function getDate( element ) {
-			console.log('getDate',element.value);
+			//console.log('getDate',element.value);
 		try {
 			return $.datepicker.parseDate( dateFormat, element.value );
 		} catch( error ) {

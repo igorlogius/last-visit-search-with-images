@@ -18,7 +18,7 @@ function TKVS(dbName, storeName) {
          this.get =  (_key) => commit('readonly', (store) => promisifyRequest(store.get(_key)) );
      this.getMany = (_keys) => commit('readonly', (store) => Promise.all(_keys.map((k) => promisifyRequest(store.get(k)))) );
         this.keys =      () => commit('readonly', (store) => promisifyRequest(store.getAllKeys()) );
-      this.values =      () => commit('readonly', (store) => promisifyRequest(store.getAll()) );
+      this.values =      () => { return this.keys().then(this.getMany);};
 
     // write
         this.set = (_key,_value) => commit('readwrite', (store) => promisifyRequest(store.put(_value, _key)));
