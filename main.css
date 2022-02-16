@@ -1,23 +1,30 @@
+/* timestamp */
 table.dataTable tbody td:nth-child(1) {
-  vertical-align: top;
   text-align: left;
-  width:auto;
+  vertical-align:middle;
+  min-width: 250px;
+  border:1px solid blue;
 }
 
-table.dataTable tbody td:nth-child(2) {
-  vertical-align: top;
-  text-align: left;
-}
-
+/* url */
 table.dataTable tbody td:nth-child(3) {
-  vertical-align: top;
   text-align: left;
-  width:0px;
+  vertical-align:middle;
+  text-align: left;
+  width: 100%;
+  border:1px solid green;
+}
+
+/* image */
+table.dataTable tbody td:nth-child(2) {
+  text-align: left;
+  vertical-align:middle;
+  border: 1px solid red;
 }
 
 .urlcell {
     display:block;
-    width: 50vw;
+    /*width: 50vw;*/
     word-wrap:break-word;
 }
 
@@ -26,7 +33,9 @@ table.dataTable tbody td:nth-child(3) {
 }
 
 .thumbnail:hover {
+    /**/
     position:relative;
+    /* */
     /*top:-25px;
     left:-35px;*/
     display:block;

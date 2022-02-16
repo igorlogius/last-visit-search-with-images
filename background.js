@@ -22,21 +22,6 @@ function log() {
 
 async function saveToStorage (details) {
 
-	//log('debug', "saveToStorage");
-	//
-	if(typeof details.responseHeaders !== 'undefined') {
-		for (let header of details.responseHeaders) {
-			//log('debug', header.name + ": " + header.value);
-			if(header.name.toLowerCase() === 'content-type') {
-				if(header.value.indexOf('text/html') === -1) {
-					log('DEBUG', "[STOPPING] tabId " + details.tabId + " has a none text/html content-type");
-					return;
-
-				}
-			}
-
-		}
-	}
 	const tabInfo = await (async () => {
 		try {
 			return await browser.tabs.get(details.tabId);
@@ -71,7 +56,7 @@ async function saveToStorage (details) {
 	//
 	try {
 	await tkvs.set(details.url, {
-		ts: details.timeStamp,
+		ts: Date.now(), //details.timeStamp, // millisec since epoch
 		img: imgUri,
 		url: details.url
 	});
@@ -82,22 +67,14 @@ async function saveToStorage (details) {
 	}
 };
 
-async function onCompleted (details) {
+async function onUpdated(tabId, changeInfo, tab) {
 
-	if (details.frameId !== 0) {
-		log('DEBUG', "[STOPPING] tabId " + details.tabId + " with url " + details.url + " is not a main frame");
-		return;
-	}
-	log('DEBUG', "[CONTINUE] tabId " + details.tabId + " with url " + details.url + " is a main frame");
-	//if ( !/^https?:\/\//.test(details.url) ){
-	//	log('DEBUG', "[STOPPING] tabId " + details.tabId + " with url " + details.url + " has an invalid protocol");
-	//	return;
-	//}
-	log('DEBUG', "[CONTINUE] tabId " + details.tabId + " with url " + details.url + " has an valid protocol");
-
+    const details = {
+            tabId: tabId,
+            url: tab.url
+    }
 
     const isExcluded = (await (async () => {
-
 
         const selectors = await ((async () => {
             try {
@@ -113,10 +90,6 @@ async function onCompleted (details) {
 
 
         for(const selector of selectors) {
-
-            //console.log(JSON.stringify(selector), details.url);
-            //console.log((new RegExp(selector.regex)).test(details.url))
-
             try {
                 if(typeof selector.activ === 'boolean'
                     && selector.activ === true
@@ -143,8 +116,6 @@ async function onCompleted (details) {
 			if (typeof tmp['delaytime'] !== 'undefined'){
 				tmp = parseInt(tmp['delaytime']);
 			}
-			//console.log('tmp ', typeof tmp);
-
 			if(typeof tmp === 'number') {
 				if(tmp > 999){
 					return tmp;
@@ -162,11 +133,8 @@ async function onCompleted (details) {
 }
 
 function onBrowserActionClicked(tab) {
-    //console.log('onBrowserActionClicked');
 	browser.tabs.create({url: "main.html"});
 }
 
-browser.webNavigation.onHistoryStateUpdated.addListener(onCompleted, { url: [ {schemes: ["http","https"]}]});
-//browser.webNavigation.onCompleted.addListener(onCompleted, { url: [ {schemes: ["http","https"]}]} );
+browser.tabs.onUpdated.addListener(onUpdated, { properties: ['url'], urls: ['<all_urls>'] });
 browser.browserAction.onClicked.addListener(onBrowserActionClicked);
-browser.webRequest.onCompleted.addListener(onCompleted, { urls: ['<all_urls>'], types: ["main_frame"] }, ["responseHeaders"]);

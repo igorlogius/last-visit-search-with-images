@@ -23,9 +23,7 @@
   "permissions": [
     "tabs",
     "storage",
-    "webNavigation",
-    "webRequest",
     "<all_urls>"
   ],
-  "version": "1.16.15"
+  "version": "1.17.0"
 }
