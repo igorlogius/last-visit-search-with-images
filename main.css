@@ -1,6 +1,6 @@
 /* timestamp */
 table.dataTable tbody td:nth-child(1) {
-  text-align: left;
+  text-align: center;
   vertical-align:middle;
   min-width: 250px;
   border:1px solid blue;

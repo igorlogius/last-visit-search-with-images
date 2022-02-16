@@ -75,12 +75,15 @@ $(document).ready(async function() {
         'processing': true,
         "deferRender": true,
         "stateSave": true,
-        /**/
+        "language": {
+            "zeroRecords": "Loading ... or No records to display"
+        },
+        /*
         "ajax": async function (data, callback, settings) {
             callback({ data: (await idbKeyval.values()) });
         },
+        */
         /**/
-        /*
         "initComplete": async function(settings, json) {
                 //alert( 'DataTables has finished its initialisation.' );
                 const values = await idbKeyval.values();
@@ -89,7 +92,7 @@ $(document).ready(async function() {
                 });
                 table.draw(false);
         },
-        */
+        /**/
         "dom": '<"top"flip>rt',
         "lengthMenu": [ [25, 50, 100, 250, 500, -1], [25, 50, 100, 250, 500, "All"] ],
         "columns": [
