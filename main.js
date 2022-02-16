@@ -1,6 +1,6 @@
 
 
-$(document).ready(function() {
+$(document).ready(async function() {
 
     let idbKeyval = new TKVS('keyval-store','keyval');
 
@@ -46,6 +46,8 @@ $(document).ready(function() {
 		});
 
 	let table = $('#myTable').DataTable( {
+        'scroller': true,
+        'scrollY': '640',
 		'columnDefs': [
 			{ orderable: false , targets: 2}
 		],
@@ -56,7 +58,7 @@ $(document).ready(function() {
 		},
 		"deferRender": true,
 		"stateSave": true,
-                       "ajax": async function (data, callback, settings) {
+                   /*    "ajax": async function (data, callback, settings) {
 			       /*
                                const entries = await idbKeyval.entries();
                                const entries_length = entries.length;
@@ -96,8 +98,15 @@ $(document).ready(function() {
 
                                callback({data:dtdata});
 			       */
-			       callback({data: (await idbKeyval.values()) });
-                       },
+			       //callback({data: (await idbKeyval.values()) });
+                           //
+                           //
+        /*
+
+			       callback({
+                       data: (await idbKeyval.values())
+                   });
+            },*/
 
 		/*
 		"ajax": async function(data, callback, settings)  {
@@ -173,6 +182,17 @@ $(document).ready(function() {
 			}
 		]
 	});
+
+    const values = await idbKeyval.values();
+
+    //let count = 0;
+    values.forEach( (v) => {
+        /*if(count % 1000){
+            table.row.add(v).draw();
+        }else{
+        }*/
+        table.row.add(v).draw();
+    });
 
 	$('#myTable tbody').on( 'click', 'tr', function () {
 		$(this).toggleClass('selected');
