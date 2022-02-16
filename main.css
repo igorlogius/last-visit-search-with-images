@@ -30,7 +30,7 @@ table.dataTable tbody td:nth-child(2) {
 
 .thumbnail {
 	transition: .25s ease;
-    width: 100px;
+    width: 15em;
 }
 
 .thumbnail:hover {
@@ -41,7 +41,7 @@ table.dataTable tbody td:nth-child(2) {
     left:-35px;*/
     display:block;
     z-index:999;
-    transform: scale(6.6);
+    transform: scale(4.6);
 }
 /*
 #outerProgress {

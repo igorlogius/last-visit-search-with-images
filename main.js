@@ -1,4 +1,30 @@
 
+function dataURItoBlob(dataURI) {
+  // convert base64 to raw binary data held in a string
+  // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
+  var byteString = atob(dataURI.split(',')[1]);
+
+  // separate out the mime component
+  var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+
+  // write the bytes of the string to an ArrayBuffer
+  var ab = new ArrayBuffer(byteString.length);
+
+  // create a view into the buffer
+  var ia = new Uint8Array(ab);
+
+  // set the bytes of the buffer to the correct values
+  for (var i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+  }
+
+  // write the ArrayBuffer to a blob, and you're done
+  var blob = new Blob([ab], {type: mimeString});
+  return blob;
+
+}
+
+
 $(document).ready(async function() {
 
     let idbKeyval = new TKVS('keyval-store','keyval');
@@ -47,19 +73,14 @@ $(document).ready(async function() {
             { orderable: false , targets: 1}
         ],
         'processing': true,
-        "language": {
-            "processing": "Processing, please wait"
-        },
-        'language': {
-            'loadingRecords': "Loading, please wait"
-        },
         "deferRender": true,
         "stateSave": true,
-        /*
+        /**/
         "ajax": async function (data, callback, settings) {
             callback({ data: (await idbKeyval.values()) });
         },
-        */
+        /**/
+        /*
         "initComplete": async function(settings, json) {
                 //alert( 'DataTables has finished its initialisation.' );
                 const values = await idbKeyval.values();
@@ -68,6 +89,7 @@ $(document).ready(async function() {
                 });
                 table.draw(false);
         },
+        */
         "dom": '<"top"flip>rt',
         "lengthMenu": [ [25, 50, 100, 250, 500, -1], [25, 50, 100, 250, 500, "All"] ],
         "columns": [
@@ -91,7 +113,9 @@ $(document).ready(async function() {
             }
             ,{ "data": "img"
                 ,"render": function(data, type,row, meta) {
-                    return type === 'display' ? '<img loading="lazy" src="' + data + '" class="thumbnail" />': data;
+
+                    const imageUrl = window.URL.createObjectURL(dataURItoBlob(data))
+                    return type === 'display' ? '<img loading="lazy" src="' + imageUrl + '" class="thumbnail" />': data;
                 }
             }
             ,{ "data": "url"
