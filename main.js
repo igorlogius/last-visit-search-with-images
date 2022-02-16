@@ -204,14 +204,3 @@ $(document).ready(async function() {
 
 } );
 
-
-browser.runtime.onMessage.addListener(
-  (data, sender) => {
-    //if (data.type === 'handle_me') {
-      return Promise.resolve('done');
-    //}
-    //return false;
-      browser.runtime.sendMessage({"": });
-  }
-);
-
