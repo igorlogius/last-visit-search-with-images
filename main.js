@@ -47,8 +47,11 @@ $(document).ready(async function() {
             { orderable: false , targets: 1}
         ],
         'processing': true,
+        "language": {
+            "processing": "Processing, please wait"
+        },
         'language': {
-            'loadingRecords': "Loading,<br/>please wait"
+            'loadingRecords': "Loading, please wait"
         },
         "deferRender": true,
         "stateSave": true,
@@ -88,7 +91,7 @@ $(document).ready(async function() {
             }
             ,{ "data": "img"
                 ,"render": function(data, type,row, meta) {
-                    return type === 'display' ? '<img loading="lazy" src="' + data + '" height="200" class="thumbnail" />': data;
+                    return type === 'display' ? '<img loading="lazy" src="' + data + '" class="thumbnail" />': data;
                 }
             }
             ,{ "data": "url"
@@ -98,23 +101,6 @@ $(document).ready(async function() {
             }
         ]
     });
-
-    /*
-    const values = await idbKeyval.values();
-
-    const REDRAW_COUNT = 100;
-    let count = 1000;
-    values.forEach( (v) => {
-            console.log(v.ts);
-        if(count % REDRAW_COUNT === 0){
-            table.row.add(v).draw();
-        }else{
-            table.row.add(v);
-        }
-    });
-    table.draw();
-    */
-
 
     $('#myTable tbody').on( 'click', 'tr', function () {
         $(this).toggleClass('selected');
