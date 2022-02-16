@@ -46,13 +46,25 @@ $(document).ready(async function() {
         'columnDefs': [
             { orderable: false , targets: 1}
         ],
-        //'processing': true,
-        /*'language': {
+        'processing': true,
+        'language': {
             'loadingRecords': "Loading,<br/>please wait"
-        },*/
+        },
         "deferRender": true,
         "stateSave": true,
-        // "ajax": async function (data, callback, settings) { callback({ data: (await idbKeyval.values()) }); },
+        /*
+        "ajax": async function (data, callback, settings) {
+            callback({ data: (await idbKeyval.values()) });
+        },
+        */
+        "initComplete": async function(settings, json) {
+                //alert( 'DataTables has finished its initialisation.' );
+                const values = await idbKeyval.values();
+                values.forEach( (v) => {
+                        table.row.add(v);
+                });
+                table.draw(false);
+        },
         "dom": '<"top"flip>rt',
         "lengthMenu": [ [25, 50, 100, 250, 500, -1], [25, 50, 100, 250, 500, "All"] ],
         "columns": [
@@ -87,6 +99,7 @@ $(document).ready(async function() {
         ]
     });
 
+    /*
     const values = await idbKeyval.values();
 
     const REDRAW_COUNT = 100;
@@ -100,6 +113,7 @@ $(document).ready(async function() {
         }
     });
     table.draw();
+    */
 
 
     $('#myTable tbody').on( 'click', 'tr', function () {
@@ -189,4 +203,15 @@ $(document).ready(async function() {
     }
 
 } );
+
+
+browser.runtime.onMessage.addListener(
+  (data, sender) => {
+    //if (data.type === 'handle_me') {
+      return Promise.resolve('done');
+    //}
+    //return false;
+      browser.runtime.sendMessage({"": });
+  }
+);
 
