@@ -6,8 +6,29 @@ table.dataTable tbody td:nth-child(1) {
   border:1px solid blue;
 }
 
-/* url */
+/* image */
+table.dataTable tbody td:nth-child(2) {
+  text-align: left;
+  vertical-align:middle;
+  border: 1px solid red;
+}
+
+/* meta keywords */
 table.dataTable tbody td:nth-child(3) {
+  text-align: left;
+  vertical-align:middle;
+  border: 1px solid pink;
+}
+
+/* meta description */
+table.dataTable tbody td:nth-child(4) {
+  text-align: left;
+  vertical-align:middle;
+  border: 1px solid orange;
+}
+
+/* url */
+table.dataTable tbody td:nth-child(5) {
   text-align: left;
   vertical-align:middle;
   text-align: left;
@@ -15,12 +36,6 @@ table.dataTable tbody td:nth-child(3) {
   border:1px solid green;
 }
 
-/* image */
-table.dataTable tbody td:nth-child(2) {
-  text-align: left;
-  vertical-align:middle;
-  border: 1px solid red;
-}
 
 .urlcell {
     display:block;

@@ -53,12 +53,77 @@ async function saveToStorage (details) {
 	if(imgUri === null){return;}
 	log('DEBUG', "[CONTINUE] tabId "+ details.tabId +" captured");
 
+    //
+    const meta_keywords = await (async() => {
+		try {
+			const tmp = await browser.tabs.executeScript(details.tabId, {code: `
+                (function(){
+                  const metas = document.getElementsByTagName('meta');
+                  for( let m of metas ){
+                    name = m.getAttribute('name');
+                    if(typeof name === 'string'){
+                        if ( name.toLowerCase() === 'keywords') {
+                            val = m.getAttribute('content');
+                            if(typeof val === 'string'){
+                                return val;
+                            }
+                        }
+                    }
+                  }
+                  return '';
+                }());
+                `
+            });
+            if(tmp.length > 0){
+                return tmp[0];
+            }
+		}catch(error) {
+			return '';
+		}
+    })();
+	log('DEBUG', "[INFO] keywords: "+ meta_keywords );
+
+
+    const meta_desc = await (async() => {
+		try {
+			const tmp = await browser.tabs.executeScript(details.tabId, {code: `
+                (function(){
+                  const metas = document.getElementsByTagName('meta');
+                  for( let m of metas ){
+                    name = m.getAttribute('name');
+                    if(typeof name === 'string'){
+                        if ( name.toLowerCase() === 'description') {
+                            val = m.getAttribute('content');
+                            if(typeof val === 'string'){
+                                return val;
+                            }
+                        }
+                    }
+                  }
+                  return '';
+                }());
+                `
+            });
+            if(tmp.length > 0){
+                return tmp[0];
+            }
+		}catch(error) {
+			return '';
+		}
+    })();
+	log('DEBUG', "[INFO] description : "+ meta_desc );
+
 	//
 	try {
+
+        //const asdf_url = new URL(details.url);
+
 	await tkvs.set(details.url, {
 		ts: Date.now(), //details.timeStamp, // millisec since epoch
 		img: imgUri,
-		url: details.url
+		url: details.url, // asdf_url.origin,
+        tags: meta_keywords,
+        desc: meta_desc
 	});
 	//
 		log('DEBUG', "[CONTINUE] tabId " + details.tabId + " wrote item to storage");

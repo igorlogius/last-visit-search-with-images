@@ -121,6 +121,16 @@ $(document).ready(async function() {
                     return type === 'display' ? '<img loading="lazy" src="' + imageUrl + '" class="thumbnail" />': data;
                 }
             }
+            ,{ "data": "tags"
+                ,"render": function(data, type,row, meta) {
+                    return type === 'display' ? '<span class="urlcell">'+ data + '</span>': data;
+                }
+            }
+            ,{ "data": "desc"
+                ,"render": function(data, type,row, meta) {
+                    return type === 'display' ? '<span class="urlcell">'+ data+ '</span>': data;
+                }
+            }
             ,{ "data": "url"
                 ,"render": function(data, type,row, meta) {
                     return type === 'display' ? '<a class="urlcell" target="_blank" href="' + data + '" a>' + data + '</a>': data;
