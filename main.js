@@ -88,6 +88,8 @@ $(document).ready(async function() {
                 //alert( 'DataTables has finished its initialisation.' );
                 const values = await idbKeyval.values();
                 values.forEach( (v) => {
+                        v.tags = v.tags || '';
+                        v.desc = v.desc || '';
                         table.row.add(v);
                 });
                 table.draw(false);
