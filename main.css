@@ -13,9 +13,10 @@ table.dataTable tbody td:nth-child(2) {
   border: 1px solid red;
 }
 
-/* meta keywords */
+/* meta keywords / tags */
 table.dataTable tbody td:nth-child(3) {
   text-align: left;
+  max-width:350px;
   vertical-align:middle;
   border: 1px solid pink;
 }
@@ -24,6 +25,7 @@ table.dataTable tbody td:nth-child(3) {
 table.dataTable tbody td:nth-child(4) {
   text-align: left;
   vertical-align:middle;
+  max-width: 600px;
   border: 1px solid orange;
 }
 
